@@ -1,0 +1,896 @@
+---
+title: "White Wine Exploration"
+author: "Timothy Najmolhoda"
+date: "October 15, 2016"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(fig.width = 12, fig.height = 8,
+                      fig.path = 'Figs/',
+                      echo = FALSE, warning = FALSE, message = FALSE)
+```
+
+The following is an analysis of a dataset composed of white wine samples. The goal is to examine each variable on its own, as well as in relation to other, and see what interesting relationships exist.
+
+##Univariate Plots##
+
+```{r}
+#read in data
+white_wine <- read.csv("wineQualityWhites.csv")
+```
+
+```{r}
+#take dimensions of the dataset
+dim(white_wine)
+```
+
+```{r}
+#show structure of the dataset
+str(white_wine)
+```
+
+```{r}
+#Give a summary of the dataset
+summary(white_wine)
+```
+
+Our dataset consists of 13 variables with nearly 4900 observations. One of the variables is only a counter, so there are twelve variables that provide some kind of substantive measurement.
+
+***Quality***
+
+```{r}
+#import plotting library
+library(ggplot2)
+#plot a histogram of the various quality levels in the dataset
+qplot(x = quality, data = white_wine, binwidth = 1) +
+  scale_x_continuous(breaks = seq(0,10,1))
+```
+
+```{r}
+#summarize quality levels in the dataset
+summary(white_wine$quality)
+```
+
+The median quality is 6 with a mean just below. It appears to have a roughly normal distribution with a max of 9 and a min of 3. No wines in the dataset have a quality of 0, 1, 2, or 10. The portion of wines that don't rate as a 5, 6, or 7 appears to be very small.
+
+***Fixed Acidity***
+```{r}
+#take summary of the faxed acidity variable
+summary(white_wine$fixed.acidity)
+```
+
+```{r}
+#draw a histogram of fixed acidity
+qplot(x = fixed.acidity, data = white_wine)
+```
+
+```{r}
+#alter binwidth & focus the x-axis on the data
+qplot(x = fixed.acidity, data = white_wine,
+      binwidth = .2) +
+  scale_x_continuous(limits = c(3,12))
+```
+
+Fixed acidity appears to have a roughly normal distribution (with a slightly positive skew) with a mean of 6.8 and a median of 6.855.
+
+***Volatile Acidity***
+
+```{r}
+#take a summary of the volatile acidity variable
+summary(white_wine$volatile.acidity)
+```
+
+```{r}
+#draw a histogram of the volatile acidity variable
+qplot(x = volatile.acidity, data = white_wine)
+```
+
+```{r}
+#alter the binwidth & focus the x-axis on the data
+qplot(x = volatile.acidity, data = white_wine,
+      binwidth = .01) +
+  scale_x_continuous(limits = c(0,.6))
+```
+
+```{r}
+#draw a histogram of volatile acidity with an x-axis scaled to log_10
+qplot(x = volatile.acidity, data = white_wine) + 
+  scale_x_log10()
+```
+
+Volatile Acidity has a mean of .2782 and a median of .2600. It appears to have a quite positive skew. Using a log_10 x scale distributes the data more normally.
+
+***Citric Acid***
+
+```{r}
+#take a summary of the citric acid variable
+summary(white_wine$citric.acid)
+```
+
+```{r}
+#draw a histogram of the citric acid variable 
+qplot(x = citric.acid, data = white_wine) +
+  scale_x_continuous(limits = c(0,.8))
+```
+
+Citric Acid has a median of .32 and a mean of .3342. The distribution appears to be fairly normal with a large amount of the data clustered around the mean and median.
+
+***Residual Sugar***
+
+```{r}
+#take a summary of the residual sugar variable
+summary(white_wine$residual.sugar)
+```
+
+```{r}
+#plot a histogram of the residual sugar variable
+qplot(x = residual.sugar, data = white_wine)
+```
+
+```{r}
+#alter the binwidth of the above histogram &
+#focus the x-axis on the data
+qplot(x = residual.sugar, data = white_wine,
+      binwidth = .5) +
+  scale_x_continuous(limits = c(0,20))
+```
+
+```{r}
+#plot a histogram with an x-axis scaled to log_10
+qplot(x = residual.sugar, data = white_wine,
+      binwidth = .05) +
+  scale_x_log10(limits = (c(.5, 25)))
+```
+
+Residual sugar has a median of 5.2 and a mean of 6.391. The distribution is very positively skewed, and a log_10 scale reveals what might be a bimodal distribution. 
+
+***Chlorides***
+
+```{r}
+#give a summary of the chlorides variable
+summary(white_wine$chlorides)
+```
+
+```{r}
+#plot a histogram of the cholorides variable
+qplot(x = chlorides, data = white_wine)
+```
+
+```{r}
+#alter the binwidth of the above variable &
+#focus the x-axis on the data
+qplot(x = chlorides, data = white_wine,
+      binwidth = .005) +
+  scale_x_continuous(limits = c(0,.1))
+```
+
+```{r}
+#draw a histogram with an x_axis scaled to log_10
+qplot(x = chlorides, data = white_wine) +
+  scale_x_log10()
+```
+
+Chlorides have a Median of .043 and a Mean of .04577. The distribution is positively skewed, and appears more normally distributed when viewed on a log_10 scale.
+
+***Free Sulfure Dioxide***
+
+```{r}
+#take a summary of the free sulfur dioxide variable
+summary(white_wine$free.sulfur.dioxide)
+```
+
+```{r}
+#plot a summary of the free sulfur dioxide variable
+qplot(x = free.sulfur.dioxide, data = white_wine)
+```
+
+```{r}
+#alter the binwidth of the above histogram & 
+#focus the x-axis on the bulk of data
+qplot(x = free.sulfur.dioxide,
+      data = white_wine,
+      binwidth = 1) +
+  scale_x_continuous(limits = c(0,90))
+```
+
+Free Sulfur Dioxide has a median of 34.00 and 35.31. The Distribution appears fairly normal.
+
+***Total Sulfur Dioxide***
+
+```{r}
+#take a summary of the total sulfur dioxide variable
+summary(white_wine$total.sulfur.dioxide)
+```
+
+```{r}
+#plot a histogram of the total sulfur dioxide variable
+qplot(x = total.sulfur.dioxide, data = white_wine)
+```
+
+```{r}
+#alter the binwidth of the above histogram &
+#focus the bulk of data on the bulk of data
+qplot(x = total.sulfur.dioxide,
+      data = white_wine,
+      binwidth = 1) +
+  scale_x_continuous(limits = c(0,300))
+```
+
+```{r}
+#plot a histogram with the x-axis scaled to square root &
+#focus the x-axis on the bulk of data
+qplot(x = total.sulfur.dioxide, data = white_wine,
+      binwidth = .5) +
+  scale_x_sqrt(limits = c(30,300))
+```
+
+Total Sulfur Dioxide has Median of 134 and a Mean of 138.4. The distribution is positively skewed, but appears more normal when viewed on a square root scale.
+
+***Density***
+
+```{r}
+#take a summary of the density variable
+summary(white_wine$density)
+```
+
+```{r}
+#plot a histogram of the density variable
+qplot(x = density, data = white_wine)
+```
+
+```{r}
+#alter the bin width of the above histogram &
+#focus the x-axis on the bulk of data
+qplot(x = density,
+      data = white_wine,
+      binwidth = .0005) +
+  scale_x_continuous(limits = c(.985,1.005))
+```
+
+```{r}
+#plot a histogram with the x_axis scaled to log_10
+qplot( x = density, data = white_wine, binwidth = .0001) +
+  scale_x_log10(limits = c(.985,1.005))
+```
+
+
+Density has a median of .9937 and a mean of .9940. The skew is slightly positive, and appears to spike in certain places.
+
+***pH***
+
+```{r}
+#take a summary of the pH variable
+summary(white_wine$pH)
+```
+
+```{r}
+#plot a histogram of the pH variable
+qplot(x = pH, data = white_wine)
+```
+
+```{r}
+#alter the bin width of the above histogram
+qplot(x = pH,
+      data = white_wine,
+      binwidth = .01)
+```
+
+pH has a median of 3.180 and a mean of 3.188. The distribution looks normal.
+
+***Sulphates***
+
+```{r}
+#take a summary of the sulphates variable
+summary(white_wine$sulphates)
+```
+
+```{r}
+#plot a histogram of the sulphates variable
+qplot(x = sulphates, data = white_wine)
+```
+
+```{r}
+#alter the binwidth of the above histogram &
+#focus the x-axis on the bulk of data
+qplot(x = sulphates,
+      data = white_wine,
+      binwidth = .05) +
+  scale_x_continuous(limits = c(.15,.9))
+```
+
+```{r}
+#create a histogram with the x-axis scaled to log_10
+qplot(x = sulphates, data = white_wine,
+      binwidth = .03) +
+  scale_x_log10(limits = c(.25,.9))
+```
+
+Sulphates have a median of .47 and a mean of .4898. The distribution is positively skewed, but appears more normal along a log_10 scale.
+
+***Alcohol***
+
+```{r}
+#take a summary of the alcohol variable
+summary(white_wine$alcohol)
+```
+
+```{r}
+#plot a histogram of the alcohol variable
+qplot(x = alcohol, data = white_wine)
+```
+
+```{r}
+#alter the bin width of the above histogram
+qplot(x = alcohol,
+      data = white_wine,
+      binwidth = .1)
+```
+
+```{r}
+#create a histogram with the x-axis scaled to log_10
+qplot(x = alcohol, data = white_wine, binwidth = .01) +
+  scale_x_log10()
+```
+
+Alcohol has a median of 10.40 and a mean of 10.51. The skew is positive and remains so even when viewed on a logarithmic scale.
+
+##Univariate Analysis##
+
+***What is the structure of the dataset?***
+
+There are 4898 wines in the dataset, each with twelve features. The features are as follows: fixed acidity, volatile acidity, citric acid, residual sugar, chlorides, free sulfur dioxide, total sulfur dioxide, density, pH, sulphates, alcohol & quality.
+
+For the variable quality, ten is the highest score, and zero is the lowest.
+
+The remaining variables are measured as follows:
+
+fixed acidity - tartaric acid in g/dm^3
+
+volatile acidity - acetic acid in g/dm^3
+
+citric acid - g/dm^3
+
+residual sugar - g/dm^3
+
+chlorides - sodium chloride in g/dm^3
+
+free sulfur dioxide - mg/dm^3
+
+total sulfur dioxide - mg/dm^3
+
+density - g/cm^3
+
+pH - rating on the pH scale
+
+sulphates - potassium sulphate in g/dm^3
+
+alcohol - percent by volume
+
+***What are the main features of interest?***
+
+The primary feature of interest is quality. I would like to find what variables are the primary influencers for quality. Is suspect alcohol may have some correlation with quality, and believe that some kind of acidity may also correlate.
+
+I am also curious about residual sugar, as it has what appears to be a bimodal distribution, and would like to know what that is related to.
+
+***What features do you think will help support your analysis?***
+
+As mentioned above, I believe alcohol, residual sugar, and variables related to acidity may help to illustrate what is guiding quality. I am curious about all variables however, and will try plotting as many as possible.
+
+***Did you create any new variables?***
+
+I did not create any new variables, however I do want to look at Bound Sulfur Dioxide, which is the Total Sulfur Dioxide - Free Sulfur Dioxide.
+
+***Unusual Distributions***
+
+A few variables looked more normally distributed when placed on a log_10 scale.
+
+
+##Bivariate Plots##
+
+```{r}
+#load library & run a pairs analysis
+library(corrplot)
+corrplot(cor(white_wine), method = "circle", order = "FPC")
+```
+
+The above plot suggests that quality has a noticeable positive correlation with alcohol content. It also suggests a noticeable negative correlations with density, chlorides, & total sulfur dioxide.
+
+Other correlations appear to be:
+
+Density & Residiual Sugar (Positive)
+Density & Total Sulfur Dioxide (Positive)
+Residual Sugar & Total Sulfur Dioxide (Positive)
+Total Sulfur Dioxide & Free Sulfur Dioxide (Positive)
+
+Alcohol & Residual Sugar (Negative)
+Alcohol & Total Sulfur Dioxide (Negative)
+Alcohol & Chlorides (Negative)
+Fixed Acidity & pH (Negative)
+
+Many of these relationships seem worth investigating.
+
+***Alcohol & Quality***
+
+```{r}
+#run a jitterplot of alcohol and quality
+ggplot(aes(x = alcohol, y = quality), data = white_wine) +
+  geom_jitter(alpha = .25) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+#run a boxplot of quality and alcohol
+qplot(x = quality, group = quality, y = alcohol, data = white_wine,
+      geom = 'boxplot') +
+  scale_x_continuous(breaks = seq(0,10,1)) +
+  coord_cartesian(ylim = c(9,13))
+```
+
+```{r}
+cor.test(x=white_wine$quality,y = white_wine$alcohol,
+          method = 'pearson')
+```
+
+The scatterplot appears to confirm the positive correlation mentioned in the previous chart. The majority of wines appear to have a quality between 5 & 7, and the average quality appears to increase as alcohol content increases. The regression line in the scatterplot confirms this as well.
+
+The boxplot shows that the median alcohol level appears to  consistently increases as quality level increases. This is observable for all quality levels except for 3 & 4. This may be due to the very small number of wines rated 3 & 4 in the data set.
+
+The correlation coefficient for the two variables is .436. This confirms that within the dataset there is moderate positive correlation.
+
+***Density & Total Sulfur Dioxide***
+
+```{r}
+#run a scatterplot of total sulfur dioxide and density
+ggplot(aes(x = total.sulfur.dioxide,y = density), data = white_wine) +
+  geom_point(alpha = .3) +
+  scale_x_continuous(limits = c(50,250)) +
+  scale_y_continuous(limits = c(.985,1.005)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+cor.test(x=white_wine$total.sulfur.dioxide,
+         y = white_wine$density,
+         method = 'pearson')
+```
+
+The scatterplot above shows an apparent positive correlation between Density & Total Sulfur Dioxide, with density gradually increasing as the other variable does.
+
+The correlation coefficient of .530 suggests the same.
+
+***Density & Residual Sugar***
+
+```{r}
+#run a scatterplot of residual sugar and density
+ggplot(aes(x = residual.sugar,y = density), data = white_wine) +
+  geom_point(alpha = .15) +
+  scale_x_continuous(limits = c(0,20)) +
+  scale_y_continuous(limits = c(.985,1.005)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+cor.test(x=white_wine$residual.sugar,
+         y = white_wine$density,
+         method = 'pearson')
+```
+
+The above scatterplot demonstrates the strong correlation between density & residual sugar. As residual sugar increases, the average density appears to as well, and it appears that the range of possible densities decreases as well. This may be due to what appears to be a much greater number of samples with a comparatively low residual sugar however.
+
+The regression line suggests a positive correlation within the data as well, and the correlation coefficient of .83 suggests a strong positive correlation.
+
+***Free Sulfur Dioxide over Total Sulfur Dioxide & Quality***
+
+```{r}
+#create a scatterplot of free sulfure dioxide over total sulfur dioxide against quality.
+ggplot(aes(x = (free.sulfur.dioxide/total.sulfur.dioxide),
+           y = quality), data = white_wine) +
+  geom_jitter(alpha = .25) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+#run a boxplot of quality against free sulfur dioxide over total sulfur dioxide.
+qplot(x = quality, y = (free.sulfur.dioxide / total.sulfur.dioxide),
+      group = quality, data = white_wine, geom = 'boxplot') +
+  coord_cartesian(ylim = c(.1,.4))
+```
+
+```{r}
+cor.test(x=(white_wine$free.sulfur.dioxide /  white_wine$total.sulfur.dioxide),
+         y = white_wine$quality,
+          method = 'pearson')
+```
+
+The above scatterplot suggests a positive correlation between percentage of free sulfur dioxide and quality, though the points themselves don't really reveal how strong it may be. The regression line confirms that it is indeed positive.
+
+The boxplot shows the median percentage of free sulfur dioxide increasing for each successive quality level, though Quality 4 does not conform with this. This may be due to the how lightly represented quality 3 & 4 wines are within the data set. Quality 9 also does not conform, also has very few data points.
+
+The correlation coefficient for the two variables is .197. This indicates a positive correlation, but one that is also mild.
+
+
+***Free Sulfure Dioxide & Total Sulfur Dioxide***
+
+```{r}
+#create a scatterplot of total sulfur dioxide against free sulfur dioxide
+ggplot(aes(x = total.sulfur.dioxide, y = free.sulfur.dioxide),
+       data = white_wine) +
+  geom_point(alpha = .2) +
+  scale_x_continuous(limits = c(0,250)) +
+  scale_y_continuous(limits = c(0,90)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+cor.test(x=white_wine$total.sulfur.dioxide,
+         y = white_wine$free.sulfur.dioxide,
+         method = 'pearson')
+```
+
+A positive correlation within the dataset is apparent here. The scatterplot clearly shows that on average, free sulfur dioxide increases as total sulfur dioxide does. The regression line makes this even more clear. The correlation coefficiient is .616, suggesting the correlation is medium to strong.
+
+***Total Sulfur Dioxide & Residual Sugar***
+
+```{r}
+#create a scatterplot of total sulfur dioxide against residual sugar.
+ggplot(aes(x = total.sulfur.dioxide, y = residual.sugar),
+       data = white_wine) +
+         geom_point(alpha = .2) +
+  scale_x_continuous(limits = c(25,250)) +
+  scale_y_continuous(limits = c(0,20)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+cor.test(x=white_wine$total.sulfur.dioxide,
+         y = white_wine$residual.sugar,
+         method = 'pearson')
+```
+
+The above scatterplot of is particularly interesting. The points by themselves are hard to interpolate from, since so much of the data has a comparatively low level of residual sugar. However, we can see sporadic points with higher levels, and this appears to be more apparent as total sulfur dioxide increases.
+
+The regression line shows that the correlation is indeed positive, and with more of a slope than the points alone might suggest. The correlation coefficient of .401 suggests that this correlation is mild to medium.
+
+
+***Density & Alcohol***
+
+```{r}
+#create a scatterplot of alcohol and density
+ggplot(aes(x = alcohol, y = density),
+       data = white_wine)+
+  geom_point(alpha = .2) +
+  scale_y_continuous(limits = c(.9875,1.0025)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+cor.test(x=white_wine$alcohol,
+         y = white_wine$density,
+         method = 'pearson')
+```
+
+The above plot shows a strong negative correlation between density and alcohol. The correlation coefficient of -.780 confirms this.
+
+***Bound Sulfur & Quality***
+
+```{r}
+#create a scatterplot of bound sulfur dioxide and quality
+ggplot(aes(x = (total.sulfur.dioxide - free.sulfur.dioxide),
+           y = quality), data = white_wine) +
+  geom_jitter(alpha = .2) +
+  scale_x_continuous(limits = c(30,230)) +
+  scale_y_continuous(limits = c(3,9)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+#create a boxplot of bound sulfur dioxide grouped by quality
+qplot(x = quality, y = (total.sulfur.dioxide - free.sulfur.dioxide),
+      group = quality, data = white_wine, geom = 'boxplot') +
+  coord_cartesian(ylim = c(0,200))
+```
+
+```{r}
+cor.test(x= (white_wine$total.sulfur.dioxide -   white_wine$free.sulfur.dioxide),
+         y = white_wine$quality,
+         method = 'pearson')
+```
+
+The regression line in the scatterplot above shows a negative correlation. This is also apparent from the points themselves, albeit not as clearly, since the quality seems to be widely distributed between 5 & 7 for most levels of Bound Sulfur Dioxide.
+
+The boxplot also shows the median and quartile levels of bound sulfur dioxide decreasing as quality increases. This becomes less clear at low quality levels, but that may be influenced by the small sample size of such qualities.
+
+The correlation coefficient of -.218 suggests a mild negative correlation.
+
+***Volatile Acidity & Quality***
+
+```{r}
+#create a scatterplot of volatile acidity and quality
+ggplot(aes(x = volatile.acidity, y = quality), data = white_wine) +
+  geom_jitter(alpha = .2) +
+  scale_x_continuous(limits = c(0,.75)) +
+  scale_y_continuous(limits = c(3,9)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+#create a boxplot of volatile acidity grouped by quality
+qplot(x = quality, y = volatile.acidity,
+      group = quality, data = white_wine, geom = 'boxplot') +
+  coord_cartesian(ylim = c(.15, .5))
+```
+
+```{r}
+cor.test(x=white_wine$volatile.acidity,
+         y = white_wine$quality,
+         method = 'pearson')
+```
+
+The points alone in the scatterplot do not show much of a correlation between quality and volatile acidity. the regression line suggests a negative correlation.
+
+The boxplot does not strongly indicate a correlation between the two variables. The median and quartile volatile acidity levels appear to go in different directions from each level to the next.
+
+The correlation coefficient is -.195. This suggests a mild negative correlation.
+
+***All Acids & Quality***
+
+```{r}
+#create a scatterplot of all acid variable and quality
+ggplot(aes(x = (fixed.acidity + volatile.acidity + citric.acid),
+       y = quality), data = white_wine) +
+  geom_jitter(alpha = .25) +
+  scale_x_continuous(limits = c(4.5,10.5)) +
+  scale_y_continuous(limits = c(3,9)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE)
+```
+
+```{r}
+#create a boxplot of all acid variables combined grouped by quality
+qplot(x = quality, y = fixed.acidity + volatile.acidity + citric.acid,
+      data = white_wine, group = quality, geom = 'boxplot') +
+  coord_cartesian(ylim = c(6.5,9.5))
+```
+
+```{r}
+cor.test(x=white_wine$fixed.acidity +
+           white_wine$volatile.acidity +
+           white_wine$citric.acid,
+         y = white_wine$quality,
+         method = 'pearson')
+```
+
+The correlation between overall acidity and quality seems to be subtle but noticeable and mostly negative. The regression line has a mildly negative slope.
+
+This is observable in the boxplot above as well, in which median and quartile overall acidity decreases regularly as quality level goes up, save for quality level 9, which has very low representation within the data set.
+
+The correlation coefficient of the two variables is -.131, which describes a mild negative correlation.
+
+##Bivariate Analysis##
+
+***What relationships did you observe?***
+
+Alcohol is the individual variable that appears to correlate most strongly with quality. This is most observable for quality ratings where we have lots of samples, and for the levels where this is not true, the alcohol levels vary widely.
+
+Density and Total Sulfur Dioxide appear to correlate positively as well.
+
+Density and Residual Sugar have a very strong positive correlation, and the variance of density appears to decrease as residual sugar increases. Also, a great number of wines in the samplehave a relatively low residual sugar, which may have influenced these findings.
+
+Quality also appears to correlate positively with ratio of free to total sulfur dioxide. As with many of our findings, this is less observable where there not very many of a given quality level, in this case qualities 3 & 9 go against the trend.
+
+Free and Total Sulfur Dioxide have a very clear positive correlation. It also looks as though the variance of free sulfur dioxide increases as total sulfur dioxide increases.
+
+Density and alchol appear to have a negative correlation, with what appears to be a fairly consisten variance across alcohol levels.
+
+Lastly, there appears to be a negative correlation between the level of all measured acids combined and quality.
+
+***What interesting features were observed?***
+The relationship between free and total sulfur dioxide continues to be interesting, I am particularly interested in the increased levels of free sulfur dioxide variance as total sulfur dioxide increases. I am curious to see how quality is affected when placed on this scale.
+
+***What are the strongest relationships observed?***
+Alcohol and quality have a strong positive correlation. The ratio of free to total sulfur dioxide also has a strong correlation.
+
+##Multivariate Plots##
+
+***Free vs. Total Sulfur Dioxide***
+
+```{r}
+#import a color library
+library(RColorBrewer)
+#create a scatter plot of total and free sulfur dioxide, 
+#with color representing quality
+ggplot(aes(x = total.sulfur.dioxide, y = free.sulfur.dioxide,
+           color = as.factor(quality)),
+           data = white_wine) +
+  geom_point(alpha = .5) +
+  scale_color_brewer(palette = "Greens") +
+  scale_x_continuous(limits = c(0, 300)) +
+  scale_y_continuous(limits = c(0, 100)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = FALSE)
+```
+
+There is a pretty clear trend here. The upper part of the shape created by the chart is a distinctly darker color than the lower part. This suggests that as the ratio of free sulfur dioxide to total sulfur dioxide increases, the quality increases as well. This corroborates our earlier findings between the variables in bivariate analysis.
+
+The regression lines generally appear to be higher for higher quality as well, and with the exception of quality level 9, appear to have similar slopes. Quality levels 7, 6, 5 have regression lines that are close together. For the portion of the plot where most data is present, 8 has more free sulfur dioxide at similar levels of sulfur dioxide that 7, which in turn has more than 6 and 5. Levels 3 and 4 have much less free sulfur dioxide than the others, though this may have to do with their low representation.
+
+***Density & Alcohol***
+
+```{r}
+#create a scatterplot with alcohol and density
+#where color represents quality
+ggplot(aes(x = alcohol, y = density,
+           color = as.factor(quality)),
+       data = white_wine)+
+  geom_jitter( alpha = .5) +
+  scale_y_continuous(limits = c(.9875,1.0025)) +
+  scale_color_brewer(palette = "Greens") +
+  geom_smooth(method = lm, se = FALSE, fullrange = FALSE)
+```
+
+This chart once again illustrates the negative correlation between density and alcohol. The color of the chart once again affirms that quality ascends as alcohol does as well. However, quality does not have appear to have much of a relation to density when alcohol level remains constant.
+
+Many of the regression lines for different quality levels have similar slopes, and generally darker lines (higher qualities) appear to have higher density at the same level than lighter lines. Quality levels 9 and 3 appear to be an exception than this, though this probably is related to the low level of representation of these samples.
+
+***Total Sulfur Dioxide & Residual Sugar***
+
+```{r}
+#create a scatterplot of total sulfur dioxide
+#and residual sugar where color represents quality
+ggplot(aes(x = total.sulfur.dioxide, y = residual.sugar,
+           color = as.factor(quality)),
+       data = white_wine) +
+         geom_point( alpha = .5) +
+   scale_color_brewer(palette = "Greens") +
+  scale_x_continuous(limits = c(0,250)) +
+  scale_y_continuous(limits = c(0,20)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = FALSE)
+```
+
+Not much of a trend is visible here from the scatterplot, beyond what we were already able to observe in bivariate plots. The regression lines do not appear to line up in any particular order either.
+
+***Total Sulfur Dioxide & Density***
+
+```{r}
+#create a scatterplot of TSF and density
+#where color represents quality
+ggplot(aes(x = total.sulfur.dioxide, y = density,
+           color = as.factor(quality)),
+       data = white_wine) +
+         geom_point( alpha = .5) +
+  scale_color_brewer(palette = "Greens") + 
+  scale_x_continuous(limits = c(0,270)) +
+  scale_y_continuous(limits = c(.985,1.005)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = FALSE)
+```
+
+This plot indicates that, at levels of of total sulfur dioxide typical to the white wines in the data set, higher quality wines tend to have a lower density level than lower quality wines of the same total sulfur dioxide level.
+
+***Density & Residual Sugar***
+
+```{r}
+#create a scatterplot of residual sugar and density
+#colot represents quality
+ggplot(aes(x = residual.sugar, y = density,
+           color = as.factor(quality)),
+       data = white_wine) +
+         geom_point(alpha = .5) +
+   scale_color_brewer(palette = "Green") +
+  scale_x_continuous(limits = c(0,22)) +
+  scale_y_continuous(limits = c(.985,1.005)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = FALSE)
+```
+
+Once again we see the clear positive correlation between density and residual sugar. This also shows that quality seems to decrease as density increases when residual sugar remains constant.
+
+The regression lines indicate that at levels of residual sugar common to the dataset, higher quality wines tend to have lower density than lower quality level wines. Quality 9 and 3 wines don't seem to conform as nicely to this rule, though this may be due to low representation.
+
+##Multivariate Analysis##
+
+***What relationships did you observe?***
+
+Quality seems to increase as Density decreases in relation to the amoung of residual sugar within a white wine in the sample.
+
+Quality also seems to increase as free sulfur dioxide increases while total sulfur dioxide remains constant.
+
+As noted before, Quality tends to increase as alcohol increases, but even though alcohol is related to density, quality does not seem to relate to density when alcohol is held constant.
+
+##Final Plots##
+
+***Plot One***
+
+```{r}
+qplot(x = quality, data = white_wine, binwidth = 1) + 
+  xlab("Quality Rating") + 
+  ylab("Quantity Represented") +
+  ggtitle("Quality Ratings") +
+  scale_x_continuous(limits = c(1,10), breaks = seq(1,10,1))
+```
+
+***Description One***
+
+The quality ratings of wines in the dataset have a distribution that roughly resembles a normal distribution. The median and modal quality rating is six. Of the nearly 4900 samples in the dataset, around 2200 have that rating. 
+
+The vast majority of wines of a rating of between five and seven. Wines in this range account for over 4000 samples. Wines of rating three and nine make up for very small portion of the the dataset (below a hundred samples each). There are no wines rated one, two, or ten in the dataset.
+
+In addition to suggesting that a large portion of white wines score somewhere in the middle of the spectrum, this plot indicates the other variables in our dataset will be more descriptive of white wines with a mid-level quality.
+
+***Plot Two***
+
+```{r}
+ggplot(aes(x = alcohol, y = quality), data = white_wine) +
+  geom_jitter(alpha = .4) +
+  geom_smooth(method = lm, se = FALSE, fullrange = TRUE) +
+  scale_x_continuous(limits = c(8,14), breaks = seq(8,14,1)) +
+  scale_y_continuous(limits = c(3,9), breaks = seq(3,9,1)) +
+  xlab("Alcohol Content (percent by volume)") +
+  ylab("Quality Rating") +
+  ggtitle("Quality Rating & Alcohol Content of White Wine")
+```
+
+```{r}
+cor.test(x=white_wine$quality,y = white_wine$alcohol,
+          method = 'pearson')
+```
+
+***Description Two***
+
+The above plot and data clearly indicate a positive correlation between Alcohol Content and Quality Rating.
+
+Wines rated at six appear to have a broad range of alcohol content levels from around nine percent to thirteen percent. Wines rated at seven have a broad range as well, but it appears to be centered more between ten percent and thirteen percent. Wines rated as five are largely between eight point five and eleven percent alcohol content.
+
+Wines of four and eight are not widely represented, but the majority of wines ranked as rating level eight appear to be between eleven and thirteen point five percent alcohol content. Wines of rating level four appear to mainly be distributed between nine and eleven percent alcohol.
+
+The regression line in the scatterplot shows a clear positive slope, that allign with the distribution of the points in the plot. The correlation coefficient of .436 indicates that Quality Rating and Alcohol Content have a positive, moderate correlation. As Quality Rating is purely an output variable, we can take this to mean that Alcohol Content does have a moderate degree of influence on Quality Rating.
+
+***Plot Three***
+
+```{r}
+#create a scatter plot of total and free sulfur dioxide, 
+#with color representing quality
+ggplot(aes(x = total.sulfur.dioxide, y = free.sulfur.dioxide,
+           color = as.factor(quality)),
+           data = subset(white_wine, quality != 3 &
+                           quality != 9)) +
+  geom_point(alpha = .6) +
+  scale_color_brewer(palette = "Greens") +
+  coord_cartesian(xlim = c(0, 250), ylim = c(0,100)) +
+  geom_smooth(method = lm, se = FALSE, fullrange = FALSE) +
+  xlab("Total Sulfur Dioxide") +
+  ylab("Free Sulfur Dioxide") +
+  ggtitle("Sulfur Dioxide Levels of White Wine by Quality") +
+  labs(color = "Quality")
+```
+
+```{r}
+cor.test(x=white_wine$total.sulfur.dioxide,
+         y = white_wine$free.sulfur.dioxide,
+          method = 'pearson')
+```
+
+
+***Description Three***
+
+The above plot shows the relationship between Total Sulfur Dioxide and Free Sulfur Dioxide for wines between quality level 4 & 8. Levels 3 & 9 were omitted due to very low representation.
+
+The correlation coefficient of .616 indicates that overall, Free Sulfur Dioxide and Total Sulfur Dioxide have a significant positive correlation.
+
+Within the plot, darker points tend to be near the higher portion, which indicates that, generally, at a given level of total sulfur dioxide, wines with higher level of free sulfur dioxide will tend to have a higher quality. Put differently, a higher percentage of free sulfur dioxide appears to correlate with a higher quality.
+
+This is observable from the regression lines as well. For the bulk of the portion of the plot where the most point are present, Regression lines for higher qualities tend to indicate higher levels of free sulfur dioxide for a given level of total sulfur dioxide.
+
+##Reflections##
+
+This data contains nearly 5,000 wine samples each with a dozen variable. I began my analysis by looking at the distribution of each variable on its own, and then began looking at them in conjunction with each other to see relationships and answer interesting questions.
+
+As I was most interested in the quality of the wine, two notable relationships that presented themselves were the correlation between quality and alcohol (this correlation was both clear and positive), as well as the correlation betwen the ratio of free to total sulfur dioxide and quality. The latter was especially interesting, since on their own, neither free nor total sulfur dioxide appeared to correlate strongly with quality.
+
+Indeed, as someone with only a passing interest in wine, one surprising element of the data was how few of the variables appeared to have a strong correlation on their own with quality. Many of the bivariate plots earlier in the analysis show this.
+
+One point of difficulty within the dataset was the distribution of quality levels. As my primary initial question had to do with what influenced quality, I felt limited at first by the fact that three quality levels (5,6, & 7 made up the substantial bulk of the data). That three levels (0,1, & 10) were not represented at all, added to this as well. 
+
+Because of this, for issues focusing on quality, I decided to focus largely on wines between quality 4 & 8. While this did not allow me to glean information about higher and lower quality wines, it did allow me to get a sense of the story for wines that made up the bulk of the sample, and likely the types of wines similar to those consumer would be used to finding, and I think it was successful in that regard.
+
+I think I was also able to find success in using different types of plots and methods to learn about the dataset in different ways. Initially, many of my scatterplots did not appear to be descriptive to me. Regression lines made the shape of data clearer, and employing correlation coefficients helped to quantify what I thought I was seeing in many cases.
+
+I feel confident that my analysis left me with a better understanding of what influences quality in white wine. As a follow-up, I would like to explore the red wine set Udacity has uploaded, and see if the factors influencing quality are similar. Eventually, looking at other types of alcoholic drinks to see if alcohol content influences perceived quality in the same way would be interesting as well.
+
